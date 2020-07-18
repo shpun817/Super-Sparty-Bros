@@ -259,6 +259,7 @@ public class CharacterController2D : MonoBehaviour {
 
 	void Dash() {
 		_isDashing = true;
+		_animator.SetBool("Dashing", true);
 		_canDash = false;
 		_rigidbody.gravityScale = 0f;
 		float direction = _facingRight?1f:-1f;
@@ -269,6 +270,7 @@ public class CharacterController2D : MonoBehaviour {
 	IEnumerator ResetDashing(float afterSeconds = 0f) {
 		yield return new WaitForSeconds(afterSeconds);
 		_isDashing = false;
+		_animator.SetBool("Dashing", false);
 		_rigidbody.gravityScale = _originalGravityScale;
 		_rigidbody.velocity = Vector2.zero;
 	}
