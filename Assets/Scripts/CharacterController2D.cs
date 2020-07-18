@@ -43,12 +43,18 @@ public class CharacterController2D : MonoBehaviour {
 	float _vx;
 	float _vy;
 
+	// Store the original gravity scale
+	float _originalGravityScale;
+
 	// player tracking
 	bool _facingRight = true;
 	bool _isGrounded = false;
 	bool _isRunning = false;
-	bool _canDoubleJump = false;
 	bool _isDropping = false;
+	bool _isDashing = false;
+
+	bool _canDash = false;
+	bool _canDoubleJump = false;
 
 	// store the layer the player is on (setup in Awake)
 	int _playerLayer;
@@ -80,6 +86,8 @@ public class CharacterController2D : MonoBehaviour {
 
 		// determine the platform's specified layer
 		_platformLayer = LayerMask.NameToLayer("Platform");
+
+		_originalGravityScale = _rigidbody.gravityScale;
 	}
 
 	// this is where most of the player controller magic happens each game event loop
@@ -117,6 +125,7 @@ public class CharacterController2D : MonoBehaviour {
 		// Allow double jump after grounded
 		if (_isGrounded) {
 			_canDoubleJump = true;
+			_canDash = true;
 		}
 
 		if (_isGrounded && Input.GetButtonDown("Jump")) // If grounded AND jump button pressed, then allow the player to jump
@@ -140,11 +149,22 @@ public class CharacterController2D : MonoBehaviour {
 			if (Physics2D.Linecast(_transform.position, groundCheck.position, LayerMask.GetMask(LayerMask.LayerToName(_platformLayer)))) {
 				DropFromPlatform();
 			}
-		
 		}
 
-		// Change the actual velocity on the rigidbody
-		_rigidbody.velocity = new Vector2(_vx * moveSpeed, _vy);
+		// Handle Dashing
+		if (_canDash && !_isDashing) {
+			bool isDashKeyPressed = Input.GetButtonDown("Dash");
+			if (isDashKeyPressed) {
+				Dash();
+			}
+		}
+
+		if (!_isDashing) {
+			// Change the actual velocity on the rigidbody
+			_rigidbody.velocity = new Vector2(_vx * moveSpeed, _vy);
+		} else {
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
+		}
 
 		// if moving up then don't collide with platform layer
 		// this allows the player to jump up through things on the platform layer
@@ -229,12 +249,28 @@ public class CharacterController2D : MonoBehaviour {
 	void DropFromPlatform() {
 		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, true);
 		_isDropping = true;
-		StartCoroutine("ResetIgnoreLayerCollisionWithPlatform", 0.3f);
+		StartCoroutine("ResetDropping", 0.3f);
 	}
 
-	IEnumerator ResetIgnoreLayerCollisionWithPlatform(float afterSeconds) {
+	IEnumerator ResetDropping(float afterSeconds = 0f) {
 		yield return new WaitForSeconds(afterSeconds);
 		_isDropping = false;
+	}
+
+	void Dash() {
+		_isDashing = true;
+		_canDash = false;
+		_rigidbody.gravityScale = 0f;
+		float direction = _facingRight?1f:-1f;
+		_rigidbody.velocity = new Vector2( direction * moveSpeed * 2.5f, 0f);
+		StartCoroutine("ResetDashing", 0.3f);
+	}
+
+	IEnumerator ResetDashing(float afterSeconds = 0f) {
+		yield return new WaitForSeconds(afterSeconds);
+		_isDashing = false;
+		_rigidbody.gravityScale = _originalGravityScale;
+		_rigidbody.velocity = Vector2.zero;
 	}
 
 	// public function to apply damage to the player
