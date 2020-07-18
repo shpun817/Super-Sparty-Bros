@@ -48,6 +48,7 @@ public class CharacterController2D : MonoBehaviour {
 	bool _isGrounded = false;
 	bool _isRunning = false;
 	bool _canDoubleJump = false;
+	bool _isDropping = false;
 
 	// store the layer the player is on (setup in Awake)
 	int _playerLayer;
@@ -108,7 +109,7 @@ public class CharacterController2D : MonoBehaviour {
 		// Check to see if character is grounded by raycasting from the middle of the player
 		// down to the groundCheck position and see if collected with gameobjects on the
 		// whatIsGround layer
-		_isGrounded = Physics2D.Linecast(_transform.position, groundCheck.position, whatIsGround);  
+		_isGrounded = Physics2D.Linecast(_transform.position, groundCheck.position, whatIsGround);
 
 		// Set the grounded animation states
 		_animator.SetBool("Grounded", _isGrounded);
@@ -133,13 +134,23 @@ public class CharacterController2D : MonoBehaviour {
 			_vy = 0f;
 		}
 
+		// Handle dropping
+		bool isDownKeyPressed = Input.GetAxisRaw("Vertical") < 0f;
+		if (isDownKeyPressed) {
+			if (Physics2D.Linecast(_transform.position, groundCheck.position, LayerMask.GetMask(LayerMask.LayerToName(_platformLayer)))) {
+				DropFromPlatform();
+			}
+		
+		}
+
 		// Change the actual velocity on the rigidbody
 		_rigidbody.velocity = new Vector2(_vx * moveSpeed, _vy);
 
 		// if moving up then don't collide with platform layer
 		// this allows the player to jump up through things on the platform layer
 		// NOTE: requires the platforms to be on a layer named "Platform"
-		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f)); 
+		if (!_isDropping)
+			Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f)); 
 	}
 
 	// Checking to see if the sprite should be flipped
@@ -213,6 +224,17 @@ public class CharacterController2D : MonoBehaviour {
 	void PlaySound(AudioClip clip)
 	{
 		_audio.PlayOneShot(clip);
+	}
+
+	void DropFromPlatform() {
+		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, true);
+		_isDropping = true;
+		StartCoroutine("ResetIgnoreLayerCollisionWithPlatform", 0.3f);
+	}
+
+	IEnumerator ResetIgnoreLayerCollisionWithPlatform(float afterSeconds) {
+		yield return new WaitForSeconds(afterSeconds);
+		_isDropping = false;
 	}
 
 	// public function to apply damage to the player
