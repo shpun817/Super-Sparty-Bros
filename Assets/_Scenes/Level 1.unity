@@ -5531,16 +5531,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5043253045986574631, guid: fa305cdefcb59e44d8e4700a15761adb,
-        type: 3}
-      propertyPath: whatIsDroppable.m_Bits
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 5672272792941343556, guid: fa305cdefcb59e44d8e4700a15761adb,
-        type: 3}
-      propertyPath: m_Volume
-      value: 0.2
-      objectReference: {fileID: 0}
     - target: {fileID: 8165893287343675714, guid: fa305cdefcb59e44d8e4700a15761adb,
         type: 3}
       propertyPath: m_Name

@@ -123,7 +123,7 @@ public class CharacterController2D : MonoBehaviour {
 		_animator.SetBool("Grounded", _isGrounded);
 
 		// Allow double jump after grounded
-		if (_isGrounded) {
+		if (_isGrounded && _vy <= 0f) {
 			_canDoubleJump = true;
 			_canDash = true;
 		}
