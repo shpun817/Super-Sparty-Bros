@@ -467,6 +467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSeconds: 5
+  rewindCoolDown: 1
 --- !u!4 &128108305 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3756153144141640029, guid: a2acad44f095eb54f90d186ba8ff5ce8,
@@ -5697,6 +5698,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1717203452595156565, guid: fa305cdefcb59e44d8e4700a15761adb,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.549
+      objectReference: {fileID: 0}
     - target: {fileID: 8165893287343675714, guid: fa305cdefcb59e44d8e4700a15761adb,
         type: 3}
       propertyPath: m_Name

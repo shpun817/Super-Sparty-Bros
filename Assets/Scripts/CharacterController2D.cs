@@ -12,7 +12,7 @@ public class CharacterController2D : MonoBehaviour {
 
 	// player health
 	public int playerHealth = 1;
-
+	
 	// LayerMask to determine what is considered ground for the player
 	public LayerMask whatIsGround;
 
